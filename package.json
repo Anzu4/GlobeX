@@ -1,0 +1,19 @@
+{
+  "name": "globex",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Anzu4/GlobeX.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Anzu4/GlobeX/issues"
+  },
+  "homepage": "https://github.com/Anzu4/GlobeX#readme"
+}
