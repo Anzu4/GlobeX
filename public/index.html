@@ -53,6 +53,7 @@
       var sun = new THREE.DirectionalLight(0xffffff, 1.3);
       sun.position.set(1, 0, 1);
       sun.castShadow = true;
+      sun.shadowCameraVisible = true;
       scene.add(sun);
 
       sun.shadow.mapSize.width = 1000;
@@ -62,19 +63,21 @@
 
       const geometry = new THREE.SphereGeometry(0.5, 32, 32);
       const cloudGeo = new THREE.SphereGeometry(0.52, 32, 32);
-      const moonOrbitGeo = new THREE.SphereGeometry(60, 40, 40);
+      const moonOrbitGeo = new THREE.SphereGeometry(2, 40, 40);
       const moonGeo = new THREE.SphereGeometry(0.1, 20, 20);
+      const spaceGeo = new THREE.SphereGeometry(5, 30, 30)
 
       const loader = new THREE.TextureLoader();
       const texture = loader.load('/public/textures/earthmap1k.jpg');
       const nightEarth = loader.load('/public/textures/earthlights1k.jpg');
       const bump = loader.load('/public/textures/earthbump1k.jpg');
       const spec = loader.load('/public/textures/earthspec1k.jpg');
-      const clouds = loader.load('/public/textures/earthcloudmap.jpg');
+      const clouds = loader.load('/public/textures/clouds.png');
       const cloudsMerged = loader.load('/public/textures/cloudsmapmerged.jpg');
       const cloudsBump = loader.load('/public/textures/earthcloudmaptrans.jpg');
       const moonMap = loader.load('/public/textures/moonmap1k.jpg');
       const moonBump = loader.load('/public/textures/moonbump1k.jpg');
+      const space = loader.load('/public/textures/stars.png')
 
       const material = new THREE.MeshPhongMaterial({
         map: texture,
@@ -97,18 +100,19 @@
       });
 
       const cloudMat = new THREE.MeshPhongMaterial({
-        map: clouds,
-        specularMap: cloudsBump,
-        bumpMap: cloudsBump,
-        bumpScale: 0.01,
-        side: THREE.FrontSide,
+        map: THREE.ImageUtils.loadTexture('/public/textures/clouds.png'),
+        //specularMap: cloudsBump,
+        // bumpMap: cloudsBump,
+        // bumpScale: 0.01,
+        side: THREE.DoubleSide,
         transparent: true,
-        opacity: 0.1,
+        opacity: 0.3,
         depthWrite: false,
       });
 
       const orbitMat = new THREE.MeshBasicMaterial({
         transparent: true,
+        opacity: 0
       });
 
       const moonMat = new THREE.MeshPhongMaterial({
@@ -117,19 +121,27 @@
         bumpScale: 0.01,
       });
 
+      const spaceMat = new THREE.MeshBasicMaterial({
+        map: space,
+        side: THREE.BackSide
+      })
+
       const earthMesh = new THREE.Mesh(geometry, material);
       earthMesh.recieveShadow = true;
       earthMesh.castShadow = false;
       const nightEarthMesh = new THREE.Mesh(geometry, nightMat);
+      nightEarthMesh.recieveShadow = true;
+      nightEarthMesh.castShadow = false;
       const cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
       const orbitMesh = new THREE.Mesh(moonOrbitGeo, orbitMat);
       const moonMesh = new THREE.Mesh(moonGeo, moonMat);
       moonMesh.castShadow = true;
       moonMesh.recieveShadow = false;
+      const spaceMesh = new THREE.Mesh(spaceGeo, spaceMat)
 
       earthMesh.add(cloudMesh);
       orbitMesh.add(moonMesh);
-      scene.add(earthMesh, orbitMesh);
+      scene.add(earthMesh, orbitMesh, spaceMesh);
       scene.add(nightEarthMesh);
       moonMesh.position.x = 0.75;
 
@@ -147,7 +159,7 @@
         controls.update();
         earthMesh.rotation.y += 0.004;
         nightEarthMesh.rotation.y += 0.004;
-        cloudMesh.rotation.y += 0.01;
+        cloudMesh.rotation.y += 0.003;
         orbitMesh.rotation.y += 0.008;
         moonMesh.rotation.y += 0.0009;
         renderer.render(scene, camera);
