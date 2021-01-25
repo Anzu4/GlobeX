@@ -51,7 +51,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 camera.position.set(0, -0.2, 8);
 controls.update()
 
-var light = new AmbientLight(0xffffff, 0.4);
+var light = new AmbientLight(0xffffff, 0.5);
 light.position.set(-0.5, 0, 0).normalize();
 scene.add(light);
 
@@ -137,7 +137,7 @@ scene.add(earthMesh, orbitMesh, spaceMesh);
 //scene.add(nightEarthMesh)
 moonMesh.position.x = 0.75;
 
-//TweenMax.to(nightMat, 1, { opacity: 1 });
+TweenMax.to(nightMat, 1, { opacity: 1 });
 
 
 

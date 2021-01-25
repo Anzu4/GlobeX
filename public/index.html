@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Globex!</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="UTF-8" />
+
+    <link href="/public/styles/main.css" rel="stylesheet" type="text/css" />
+
+    <!-- <script src="/bundle.js" defer></script> -->
+
+    <!-- <script type="module" src="./src/main.js"></script> -->
+  </head>
+
+  <body>
+    <h1>Globex: Learning three.js and Greensock Animation</h1>
+    <script src="/vendor/three/build/three.js"></script>
+    <script src="/vendor/three/examples/jsm/controls/Orbit.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+
+    <script>
+      const scene = new THREE.Scene();
+
+
+      const fov = 11; // AKA Field of View
+      const aspect = window.innerWidth / window.innerHeight;
+      const near = 0.1; // the near clipping plane
+      const far = 600; // the far clipping plane
+      const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
+      camera.position.set(0, -0.2, 8);
+
+      const renderer = new THREE.WebGLRenderer();
+      renderer.shadowMapEnabled = true;
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      window.addEventListener('resize', function () {
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      var light = new THREE.AmbientLight(0xffffff, 0.6);
+      light.position.set(-0.5, 0, 0).normalize();
+      scene.add(light);
+
+      var sun = new THREE.DirectionalLight(0xffffff, 1.3);
+      sun.position.set(1, 0, 1);
+      scene.add(sun);
+
+      const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+      const cloudGeo = new THREE.SphereGeometry(0.52, 32, 32);
+      const moonOrbitGeo = new THREE.SphereGeometry(60, 40, 40);
+      const moonGeo = new THREE.SphereGeometry(0.1, 20, 20);
+
+      const loader = new THREE.TextureLoader();
+      const texture = loader.load('/public/textures/earthmap1k.jpg');
+      const nightEarth = loader.load('/public/textures/earthlights1k.jpg');
+      const bump = loader.load('/public/textures/earthbump1k.jpg');
+      const spec = loader.load('/public/textures/earthspec1k.jpg');
+      const clouds = loader.load('/public/textures/earthcloudmap.jpg');
+      const cloudsMerged = loader.load('/public/textures/cloudsmapmerged.jpg');
+      const cloudsBump = loader.load('/public/textures/earthcloudmaptrans.jpg');
+      const moonMap = loader.load('/public/textures/moonmap1k.jpg');
+      const moonBump = loader.load('/public/textures/moonbump1k.jpg');
+
+      const material = new THREE.MeshPhongMaterial({
+        map: texture,
+        bumpMap: bump,
+        bumpScale: 3,
+        specularMap: spec,
+        transparent: true,
+        opacity: 1,
+        depthWrite: false,
+      });
+
+      const nightMat = new THREE.MeshPhongMaterial({
+        map: nightEarth,
+        bumpMap: bump,
+        bumpScale: 3,
+        specularMap: spec,
+        transparent: true,
+        opacity: 0,
+        depthWrite: true,
+      });
+
+      const cloudMat = new THREE.MeshPhongMaterial({
+        map: clouds,
+        specularMap: cloudsBump,
+        bumpMap: cloudsBump,
+        bumpScale: 0.01,
+        side: THREE.FrontSide,
+        transparent: true,
+        opacity: 0.1,
+        depthWrite: false,
+      });
+
+      const orbitMat = new THREE.MeshBasicMaterial({
+        transparent: true,
+      });
+
+      const moonMat = new THREE.MeshPhongMaterial({
+        map: moonMap,
+        bumpMap: moonBump,
+        bumpScale: 0.01,
+      });
+
+      const earthMesh = new THREE.Mesh(geometry, material);
+      const nightEarthMesh = new THREE.Mesh(geometry, nightMat);
+      const cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
+      const orbitMesh = new THREE.Mesh(moonOrbitGeo, orbitMat);
+      const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+
+      earthMesh.add(cloudMesh);
+      orbitMesh.add(moonMesh);
+      scene.add(earthMesh, orbitMesh);
+      //earthMesh.add(nightEarthMesh);
+      scene.add(nightEarthMesh)
+      moonMesh.position.x = 0.75;
+
+      let night = gsap.timeline({repeat: -1});
+      night.to(nightMat, {duration: 5, opacity: 1})
+      night.to (nightMat, {duration: 3, opacity: 0})
+
+      let sunControl = gsap.timeline({repeat: -1});
+      sunControl.to(sun, {duration: 5, intensity: 0})
+      sunControl.to(sun, {duration: 3, intensity: 1.3})
+
+
+
+      function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        earthMesh.rotation.y += 0.004;
+        nightEarthMesh.rotation.y += 0.004;
+        cloudMesh.rotation.y += 0.01;
+        orbitMesh.rotation.y += 0.008;
+        moonMesh.rotation.y += 0.0009;
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+
+    <div id="scene-container">
+      <canvas id="space-canvas"></canvas>
+    </div>
+
+    <div></div>
+  </body>
+</html>
