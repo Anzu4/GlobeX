@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Globex!</title>
+    <title>GlobeX!</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
@@ -11,17 +11,18 @@
     <!-- <script src="/bundle.js" defer></script> -->
 
     <!-- <script type="module" src="./src/main.js"></script> -->
-  </head>
 
-  <body>
-    <h1>Globex: Learning three.js and Greensock Animation</h1>
     <script src="/vendor/three/build/three.js"></script>
     <script src="/vendor/three/examples/jsm/controls/Orbit.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
+  </head>
+
+  <body>
+    <h1>GlobeX: Learning three.js and Greensock Animation</h1>
+
 
     <script>
       const scene = new THREE.Scene();
-
 
       const fov = 11; // AKA Field of View
       const aspect = window.innerWidth / window.innerHeight;
@@ -31,7 +32,8 @@
       camera.position.set(0, -0.2, 8);
 
       const renderer = new THREE.WebGLRenderer();
-      renderer.shadowMapEnabled = true;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
@@ -45,11 +47,18 @@
 
       var light = new THREE.AmbientLight(0xffffff, 0.6);
       light.position.set(-0.5, 0, 0).normalize();
+      light.castShadow = true;
       scene.add(light);
 
       var sun = new THREE.DirectionalLight(0xffffff, 1.3);
       sun.position.set(1, 0, 1);
+      sun.castShadow = true;
       scene.add(sun);
+
+      sun.shadow.mapSize.width = 1000;
+      sun.shadow.mapSize.height = 1000;
+      sun.shadow.camera.near = .001
+      sun.shadow.camera.far = 1000;
 
       const geometry = new THREE.SphereGeometry(0.5, 32, 32);
       const cloudGeo = new THREE.SphereGeometry(0.52, 32, 32);
@@ -109,27 +118,29 @@
       });
 
       const earthMesh = new THREE.Mesh(geometry, material);
+      earthMesh.recieveShadow = true;
+      earthMesh.castShadow = false;
       const nightEarthMesh = new THREE.Mesh(geometry, nightMat);
       const cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
       const orbitMesh = new THREE.Mesh(moonOrbitGeo, orbitMat);
       const moonMesh = new THREE.Mesh(moonGeo, moonMat);
+      moonMesh.castShadow = true;
+      moonMesh.recieveShadow = false;
 
       earthMesh.add(cloudMesh);
       orbitMesh.add(moonMesh);
       scene.add(earthMesh, orbitMesh);
-      //earthMesh.add(nightEarthMesh);
-      scene.add(nightEarthMesh)
+      scene.add(nightEarthMesh);
       moonMesh.position.x = 0.75;
 
-      let night = gsap.timeline({repeat: -1});
-      night.to(nightMat, {duration: 5, opacity: 1})
-      night.to (nightMat, {duration: 3, opacity: 0})
 
-      let sunControl = gsap.timeline({repeat: -1});
-      sunControl.to(sun, {duration: 5, intensity: 0})
-      sunControl.to(sun, {duration: 3, intensity: 1.3})
+      let night = gsap.timeline({ repeat: -1 });
+      night.to(nightMat, { duration: 6, opacity: 1 });
+      night.to(nightMat, { duration: 6, opacity: 0 });
 
-
+      let sunControl = gsap.timeline({ repeat: -1 });
+      sunControl.to(sun, { duration: 6, intensity: 0 });
+      sunControl.to(sun, { duration: 6, intensity: 1.3 });
 
       function animate() {
         requestAnimationFrame(animate);
