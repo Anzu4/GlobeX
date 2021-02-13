@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta charset="UTF-8" />
 
-    <link href="/public/styles/main.css" rel="stylesheet" type="text/css" />
+    <link
+      href="/public/styles/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
     <!-- <script src="/bundle.js" defer></script> -->
 
@@ -19,7 +23,6 @@
 
   <body>
     <h1>GlobeX: Learning three.js and Greensock Animation</h1>
-
 
     <script>
       const scene = new THREE.Scene();
@@ -45,7 +48,7 @@
 
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-      var light = new THREE.AmbientLight(0xffffff, 0.6);
+      var light = new THREE.AmbientLight(0xffffff, 1.2);
       light.position.set(-0.5, 0, 0).normalize();
       light.castShadow = true;
       scene.add(light);
@@ -58,26 +61,26 @@
 
       sun.shadow.mapSize.width = 1000;
       sun.shadow.mapSize.height = 1000;
-      sun.shadow.camera.near = .001
+      sun.shadow.camera.near = 0.001;
       sun.shadow.camera.far = 1000;
 
       const geometry = new THREE.SphereGeometry(0.5, 32, 32);
       const cloudGeo = new THREE.SphereGeometry(0.52, 32, 32);
       const moonOrbitGeo = new THREE.SphereGeometry(2, 40, 40);
       const moonGeo = new THREE.SphereGeometry(0.1, 20, 20);
-      const spaceGeo = new THREE.SphereGeometry(5, 30, 30)
+      const spaceGeo = new THREE.SphereGeometry(5, 30, 30);
 
       const loader = new THREE.TextureLoader();
-      const texture = loader.load('/public/textures/earthmap1k.jpg');
-      const nightEarth = loader.load('/public/textures/earthlights1k.jpg');
-      const bump = loader.load('/public/textures/earthbump1k.jpg');
-      const spec = loader.load('/public/textures/earthspec1k.jpg');
-      const clouds = loader.load('/public/textures/clouds.png');
-      const cloudsMerged = loader.load('/public/textures/cloudsmapmerged.jpg');
-      const cloudsBump = loader.load('/public/textures/earthcloudmaptrans.jpg');
-      const moonMap = loader.load('/public/textures/moonmap1k.jpg');
-      const moonBump = loader.load('/public/textures/moonbump1k.jpg');
-      const space = loader.load('/public/textures/stars.png')
+      const texture = loader.load('/textures/earthmap1k.jpg');
+      const nightEarth = loader.load('/textures/earthlights1k.jpg');
+      const bump = loader.load('/textures/earthbump1k.jpg');
+      const spec = loader.load('/textures/earthspec1k.jpg');
+      const clouds = loader.load('/textures/clouds.png');
+      const cloudsMerged = loader.load('/textures/cloudsmapmerged.jpg');
+      const cloudsBump = loader.load('/textures/earthcloudmaptrans.jpg');
+      const moonMap = loader.load('/textures/moonmap1k.jpg');
+      const moonBump = loader.load('/textures/moonbump1k.jpg');
+      const space = loader.load('/textures/stars.png');
 
       const material = new THREE.MeshPhongMaterial({
         map: texture,
@@ -100,7 +103,7 @@
       });
 
       const cloudMat = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture('/public/textures/clouds.png'),
+        map: THREE.ImageUtils.loadTexture('/textures/clouds.png'),
         //specularMap: cloudsBump,
         // bumpMap: cloudsBump,
         // bumpScale: 0.01,
@@ -112,7 +115,7 @@
 
       const orbitMat = new THREE.MeshBasicMaterial({
         transparent: true,
-        opacity: 0
+        opacity: 0,
       });
 
       const moonMat = new THREE.MeshPhongMaterial({
@@ -123,8 +126,8 @@
 
       const spaceMat = new THREE.MeshBasicMaterial({
         map: space,
-        side: THREE.BackSide
-      })
+        side: THREE.BackSide,
+      });
 
       const earthMesh = new THREE.Mesh(geometry, material);
       earthMesh.recieveShadow = true;
@@ -137,14 +140,13 @@
       const moonMesh = new THREE.Mesh(moonGeo, moonMat);
       moonMesh.castShadow = true;
       moonMesh.recieveShadow = false;
-      const spaceMesh = new THREE.Mesh(spaceGeo, spaceMat)
+      const spaceMesh = new THREE.Mesh(spaceGeo, spaceMat);
 
       earthMesh.add(cloudMesh);
       orbitMesh.add(moonMesh);
       scene.add(earthMesh, orbitMesh, spaceMesh);
       scene.add(nightEarthMesh);
       moonMesh.position.x = 0.75;
-
 
       let night = gsap.timeline({ repeat: -1 });
       night.to(nightMat, { duration: 6, opacity: 1 });
