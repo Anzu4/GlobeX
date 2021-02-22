@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8" />
     <title>GlobeX!</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta charset="UTF-8" />
 
     <link href="/public/styles/main.css" rel="stylesheet" type="text/css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.min.js"
+      integrity="sha512-XI02ivhfmEfnk8CEEnJ92ZS6hOqWoWMKF6pxF/tC/DXBVxDXgs2Kmlc9CHA0Aw2dX03nrr8vF54Z6Mqlkuabkw=="
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script src="./vendor/three/examples/jsm/controls/Orbit.js"></script> -->
+    <script src="//cdn.rawgit.com/mrdoob/three.js/master/examples/js/controls/OrbitControls.js"></script>
 
-    <!-- <script src="/bundle.js" defer></script> -->
-
-    <!-- <script type="module" src="./src/main.js"></script> -->
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r125/three.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three-orbitcontrols@2.110.3/OrbitControls.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.6.0/gsap.min.js"></script>
   </head>
 
@@ -23,12 +24,14 @@
     <script>
       const scene = new THREE.Scene();
 
+      // camera settings
       const fov = 11; // AKA Field of View
       const aspect = window.innerWidth / window.innerHeight;
       const near = 0.1; // the near clipping plane
       const far = 600; // the far clipping plane
+
+      //camera
       const camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
-      camera.position.set(0, -0.2, 8);
 
       const renderer = new THREE.WebGLRenderer();
       renderer.shadowMap.enabled = true;
@@ -36,13 +39,17 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+      camera.position.set(0, -0.2, 8);
+      controls.update();
+
       window.addEventListener('resize', function () {
         renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
+        controls.update();
       });
-
-      //const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
       var light = new THREE.AmbientLight(0xffffff, 1.2);
       light.position.set(-0.5, 0, 0).normalize();
@@ -85,7 +92,7 @@
         specularMap: spec,
         transparent: true,
         opacity: 1,
-        depthWrite: false,
+        //depthWrite: false,
       });
 
       const nightMat = new THREE.MeshPhongMaterial({
@@ -126,23 +133,26 @@
       });
 
       const earthMesh = new THREE.Mesh(geometry, material);
-      earthMesh.recieveShadow = true;
-      earthMesh.castShadow = false;
+      // earthMesh.recieveShadow = true;
+      // earthMesh.castShadow = false;
       const nightEarthMesh = new THREE.Mesh(geometry, nightMat);
-      nightEarthMesh.recieveShadow = true;
-      nightEarthMesh.castShadow = false;
+      // nightEarthMesh.recieveShadow = true;
+      // nightEarthMesh.castShadow = false;
       const cloudMesh = new THREE.Mesh(cloudGeo, cloudMat);
       const orbitMesh = new THREE.Mesh(moonOrbitGeo, orbitMat);
       const moonMesh = new THREE.Mesh(moonGeo, moonMat);
-      moonMesh.castShadow = true;
-      moonMesh.recieveShadow = false;
+      // moonMesh.castShadow = true;
+      // moonMesh.recieveShadow = false;
       const spaceMesh = new THREE.Mesh(spaceGeo, spaceMat);
 
       earthMesh.add(cloudMesh);
       orbitMesh.add(moonMesh);
       scene.add(earthMesh, orbitMesh, spaceMesh);
       scene.add(nightEarthMesh);
+      earthMesh.position.y = -0.2;
+      nightEarthMesh.position.y = -0.2;
       moonMesh.position.x = 0.75;
+      moonMesh.position.y = -0.2;
 
       let night = gsap.timeline({ repeat: -1 });
       night.to(nightMat, { duration: 6, opacity: 1 });
@@ -154,12 +164,12 @@
 
       function animate() {
         requestAnimationFrame(animate);
-        //controls.update();
         earthMesh.rotation.y += 0.004;
         nightEarthMesh.rotation.y += 0.004;
         cloudMesh.rotation.y += 0.003;
         orbitMesh.rotation.y += 0.008;
         moonMesh.rotation.y += 0.0009;
+        controls.update();
         renderer.render(scene, camera);
       }
       animate();
