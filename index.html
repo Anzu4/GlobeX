@@ -74,16 +74,16 @@
       const spaceGeo = new THREE.SphereGeometry(5, 30, 30);
 
       const loader = new THREE.TextureLoader();
-      const texture = loader.load('/textures/earthmap1k.jpg');
-      const nightEarth = loader.load('/textures/earthlights1k.jpg');
-      const bump = loader.load('/textures/earthbump1k.jpg');
-      const spec = loader.load('/textures/earthspec1k.jpg');
-      const clouds = loader.load('/textures/clouds.png');
-      const cloudsMerged = loader.load('/textures/cloudsmapmerged.jpg');
-      const cloudsBump = loader.load('/textures/earthcloudmaptrans.jpg');
-      const moonMap = loader.load('/textures/moonmap1k.jpg');
-      const moonBump = loader.load('/textures/moonbump1k.jpg');
-      const space = loader.load('/textures/stars.png');
+      const texture = loader.load('./textures/earthmap1k.jpg');
+      const nightEarth = loader.load('./textures/earthlights1k.jpg');
+      const bump = loader.load('./textures/earthbump1k.jpg');
+      const spec = loader.load('./textures/earthspec1k.jpg');
+      const clouds = loader.load('./textures/clouds.png');
+      const cloudsMerged = loader.load('./textures/cloudsmapmerged.jpg');
+      const cloudsBump = loader.load('./textures/earthcloudmaptrans.jpg');
+      const moonMap = loader.load('./textures/moonmap1k.jpg');
+      const moonBump = loader.load('./textures/moonbump1k.jpg');
+      const space = loader.load('./textures/stars.png');
 
       const material = new THREE.MeshPhongMaterial({
         map: texture,
